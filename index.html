@@ -5,7 +5,7 @@
     <meta charset=utf-8 />
     <title>Wandelapp</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#DDDDDD"/>
+    <meta name="theme-color" content="#DDDDDD" />
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <style>
         /* input[type="file"] {
@@ -35,6 +35,7 @@
         .inputfile+label {
             cursor: pointer;
             /* "hand" cursor */
+
         /* } */
     </style>
 </head>
@@ -45,65 +46,91 @@
         <h1>No Script</h1>
     </noscript>
 
-<body>
-    <!-- <div style="position: absolute; top: 0; right: 0;z-index: 1;">
+    <body>
+        <!-- <div style="position: absolute; top: 0; right: 0;z-index: 1;">
         <select id="maptype">
             <option value="map">Map</option>
             <option value="sat">Satelite</option>
         </select>
     </div> -->
-    <!-- should be run on localhost -->
+        <!-- should be run on localhost -->
 
-    <!-- Ractive template -->
-    <script id='template' type='text/ractive'>
+        <!-- Ractive template -->
+        <script id='template' type='text/ractive'>
 
-        <!-- Mapbox -->
-        <div id='map'></div>
-        
-        <!-- Routes list -->
-        <div id="accordion">
-            {{#each hikes}}
-            <h1 on-click="['collapse', data._id, this]">wandeling {{data.json.features.0.properties.name}}</h1>
-            <div class="item" id="route{{data._id}}">
-                {{data.json.features.0.properties.desc}}
+            <!-- Mapbox -->
+            <div id='map'></div>
+
+            <!-- Routes list -->
+            <div id="accordion">
+                {{#each hikes}}
+                <h1 on-click="['collapse', data._id, this]">wandeling {{data.json.features.0.properties.name}}</h1>
+                <div class="item" id="route{{data._id}}">
+                    {{data.json.features.0.properties.desc}}
+                </div>
+                {{/each}}
             </div>
-            {{/each}}
-        </div>
-        
-        <!-- Info & upload -->
-        <div id="upload">
-            <input  on-change="uploadgpx" type="file" name="file" id="file" class="inputfile" />
-            <label for="file">Upoad GPX File</label>
-        </div>
 
-        <div id="info"></div>
-       
+            <!-- Info & upload -->
+            <div id="upload">
+                <input on-change="uploadgpx" type="file" name="file" id="file" class="inputfile" />
+                <label for="file">Upoad GPX File</label>
+            </div>
 
-    </script>
+            <div id="info"></div>
 
 
-    <!-- Ractive div/template -->
-    <div id='container'></div>
+        </script>
 
-    <link rel="stylesheet" type="text/css" href="css/cssreset.css" />
-    <link rel="stylesheet" type="text/css" href="css/wandelapp.css" />
-    <link rel="stylesheet" type="text/css" href="css/mapbox-gl.css" />
-    <script src='js/app_es5.js'></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('sw.js').then(function(registration) {
-                        // Registration was successful
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, function(err) {
-                        // registration failed :(
-                        console.log('ServiceWorker registration failed: ', err);
+
+        <!-- Ractive div/template -->
+        <div id='container'></div>
+
+        <link rel="stylesheet" type="text/css" href="css/cssreset.css" />
+        <link rel="stylesheet" type="text/css" href="css/wandelapp.css" />
+        <link rel="stylesheet" type="text/css" href="css/mapbox-gl.css" />
+        <script src='js/app_es5.js'></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', function () {
+                        navigator.serviceWorker.register('sw.js').then(function (registration) {
+                            // Registration was successful
+                            console.log('ServiceWorker registration successful with scope: ',
+                                registration.scope);
+                        }, function (err) {
+                            // registration failed :(
+                            console.log('ServiceWorker registration failed: ', err);
+                        });
                     });
-                });
-            }
-        });
-    </script>
-</body>
+                }
+            });
+        </script>
+    </body>
 
 </html>
+
+<script>
+    fetch("https://nodejs-mongo-persistent-wandelappbackend-v4.a3c1.starter-us-west-1.openshiftapps.com/").then(
+        function (response) {
+            if (response.status != 200) {
+                displayinfo("Backend Offline");
+            }
+        });
+
+    function displayinfo(text) {
+        var info = document.getElementById('info');
+        info.innerHTML = text;
+        info.style.visibility = 'visible';
+
+        var timeleft = 10;
+        var downloadTimer = setInterval(function () {
+            --timeleft;
+            if (timeleft <= 0) {
+                clearInterval(downloadTimer);
+                info.innerHTML = "";
+                info.style.visibility = 'hidden';
+            }
+        }, 1000);
+    }
+</script>

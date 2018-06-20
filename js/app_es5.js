@@ -48356,13 +48356,33 @@ var hikingapp = function hikingapp(remoteserver) {
         // navigator.geolocation.watchPosition(map.geo_success.bind(map), null, geo_options);
     });
 
+    function displayinfo(text) {
+        info.innerHTML = text;
+        info.style.visibility = 'visible';
+
+        var timeleft = 10;
+        var downloadTimer = setInterval(function () {
+            --timeleft;
+            if (timeleft <= 0) {
+                clearInterval(downloadTimer);
+                info.innerHTML = "";
+                info.style.visibility = 'hidden';
+            }
+        }, 1000);
+    }
+
     //Events
     ractive_ui.on({
         'collapse': function collapse(event, filename, routeobj) {
             console.log("yes yes yes");
             //Toggle description
-            (0, _jquery2.default)(".item").toggle(false);
-            (0, _jquery2.default)("#route" + filename).toggle(true);
+            // $(".item").toggle(false);
+            var items = document.getElementsByClassName('item');
+            for (var x = 0; x < items.length; x++) {
+                items[x].classList.toggle('visible');
+            }
+            // $("#route" + filename).toggle(true);
+            document.getElementById("#route" + filename).classList.toggle('visible');
             //Show chosen route on map
             map.showroute(routeobj.data.json);
         },
@@ -48374,16 +48394,7 @@ var hikingapp = function hikingapp(remoteserver) {
                 (0, _routes.posttextfile)(remoteserver + '/upload?cuid=' + cuid, file).then(function () {
                     //Retreive the latest routes async
                     (0, _routes.getroutesjson)(remoteserver + '/routes?cuid=' + cuid).then(function (routesjson) {
-                        //Show success
-                        var timeleft = 10;
-                        var downloadTimer = setInterval(function () {
-                            --timeleft;
-                            if (timeleft <= 0) {
-                                clearInterval(downloadTimer);
-                                info.innerHTML = "";
-                            }
-                        }, 1000);
-                        info.innerHTML = "Route is toegevoegd";
+                        displayinfo("Route is toegevoegd");
                         ractive_ui.set("hikes", routesjson);
                         //Show chosen route
                         map.showroute(routesjson[routesjson.length - 1].data.json);
@@ -48393,14 +48404,14 @@ var hikingapp = function hikingapp(remoteserver) {
                         if (reason === "cuid is invalid, ask for a new one on /cuid") {
                             localStorage.removeItem('cuid');
                         }
-                        info.innerHTML = reason;
+                        displayinfo(reason);
                     }).catch(function (reason) {
                         //error
                         console.log(reason + "Blala");
                         if (reason === "cuid is invalid, ask for a new one on /cuid") {
                             localStorage.removeItem('cuid');
                         }
-                        info.innerHTML = reason;
+                        displayinfo(reason);
                     });
                 }).catch(function (e) {
                     info.innerHTML = e;

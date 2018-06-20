@@ -48768,7 +48768,7 @@ var posttextfile = function posttextfile() {
  * @returns cuid
  */
 var getcuid = function getcuid(remoteserver) {
-    var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     var cuid = localStorage.getItem("cuid");
     console.log(cuid);

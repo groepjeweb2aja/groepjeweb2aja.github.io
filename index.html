@@ -116,7 +116,11 @@
             if (response.status != 200) {
                 displayinfo("Backend Offline");
             }
-        });
+        }).catch(function(response) {
+            if (response.status != 200) {
+                displayinfo("Backend Offline");
+            }
+        });;
 
     function displayinfo(text) {
         var info = document.getElementById('info');

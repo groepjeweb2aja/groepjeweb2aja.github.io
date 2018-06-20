@@ -48346,8 +48346,10 @@ var hikingapp = function hikingapp(remoteserver) {
             console.log("FAILED SETTING HIKES");
             if (reason === "cuid is invalid, ask for a new one on /cuid") {
                 localStorage.removeItem('cuid');
+                cuid = (0, _routes.getcuid)(remoteserver, true);
+                (0, _routes.getroutesjson)(remoteserver + '/routes?cuid=' + cuid);
             }
-            console.log(reason);
+            // console.log(reason);
         }).catch(function (e) {
             console.log(e);
         });
@@ -48376,12 +48378,12 @@ var hikingapp = function hikingapp(remoteserver) {
         'collapse': function collapse(event, filename, routeobj) {
             console.log("yes yes yes");
             //Toggle description
-            // $(".item").toggle(false);
-            var items = document.getElementsByClassName('item');
-            for (var x = 0; x < items.length; x++) {
-                items[x].classList.toggle('visible');
-            }
-            // $("#route" + filename).toggle(true);
+            (0, _jquery2.default)(".item").toggle(false);
+            // var items = document.getElementsByClassName('item');
+            // for (let x = 0; x < items.length; x++) {
+            //     items[x].classList.toggle('visible');
+            // }
+            (0, _jquery2.default)("#route" + filename).toggle(true);
             document.getElementById("#route" + filename).classList.toggle('visible');
             //Show chosen route on map
             map.showroute(routeobj.data.json);
@@ -48400,18 +48402,22 @@ var hikingapp = function hikingapp(remoteserver) {
                         map.showroute(routesjson[routesjson.length - 1].data.json);
                     }, function (reason) {
                         //error
-                        console.log(reason + "Blala");
+                        console.log(reason);
                         if (reason === "cuid is invalid, ask for a new one on /cuid") {
                             localStorage.removeItem('cuid');
+                            cuid = (0, _routes.getcuid)(remoteserver, true);
+                            (0, _routes.getroutesjson)(remoteserver + '/routes?cuid=' + cuid);
                         }
-                        displayinfo(reason);
+                        // displayinfo(reason);
                     }).catch(function (reason) {
                         //error
-                        console.log(reason + "Blala");
+                        console.log(reason);
                         if (reason === "cuid is invalid, ask for a new one on /cuid") {
                             localStorage.removeItem('cuid');
+                            cuid = (0, _routes.getcuid)(remoteserver, true);
+                            (0, _routes.getroutesjson)(remoteserver + '/routes?cuid=' + cuid);
                         }
-                        displayinfo(reason);
+                        // displayinfo(reason);
                     });
                 }).catch(function (e) {
                     info.innerHTML = e;
@@ -48768,7 +48774,7 @@ var posttextfile = function posttextfile() {
  * @returns cuid
  */
 var getcuid = function getcuid(remoteserver) {
-    var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
     var cuid = localStorage.getItem("cuid");
     console.log(cuid);

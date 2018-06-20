@@ -86,6 +86,35 @@
         <!-- Ractive div/template -->
         <div id='container'></div>
 
+        <script>
+            fetch("https://nodejs-mongo-persistent-wandelappbackend-v4.a3c1.starter-us-west-1.openshiftapps.com/").then(
+                function (response) {
+                    if (response.status != 200) {
+                        displayinfo("Backend Offline");
+                    }
+                }).catch(function(response) {
+                    if (response.status != 200) {
+                        displayinfo("Backend Offline");
+                    }
+                });;
+        
+            function displayinfo(text) {
+                var info = document.getElementById('info');
+                info.innerHTML = text;
+                info.style.visibility = 'visible';
+        
+                var timeleft = 10;
+                var downloadTimer = setInterval(function () {
+                    --timeleft;
+                    if (timeleft <= 0) {
+                        clearInterval(downloadTimer);
+                        info.innerHTML = "";
+                        info.style.visibility = 'hidden';
+                    }
+                }, 1000);
+            }
+        </script>
+
         <link rel="stylesheet" type="text/css" href="css/cssreset.css" />
         <link rel="stylesheet" type="text/css" href="css/wandelapp.css" />
         <link rel="stylesheet" type="text/css" href="css/mapbox-gl.css" />
@@ -109,32 +138,3 @@
     </body>
 
 </html>
-
-<script>
-    fetch("https://nodejs-mongo-persistent-wandelappbackend-v4.a3c1.starter-us-west-1.openshiftapps.com/").then(
-        function (response) {
-            if (response.status != 200) {
-                displayinfo("Backend Offline");
-            }
-        }).catch(function(response) {
-            if (response.status != 200) {
-                displayinfo("Backend Offline");
-            }
-        });;
-
-    function displayinfo(text) {
-        var info = document.getElementById('info');
-        info.innerHTML = text;
-        info.style.visibility = 'visible';
-
-        var timeleft = 10;
-        var downloadTimer = setInterval(function () {
-            --timeleft;
-            if (timeleft <= 0) {
-                clearInterval(downloadTimer);
-                info.innerHTML = "";
-                info.style.visibility = 'hidden';
-            }
-        }, 1000);
-    }
-</script>

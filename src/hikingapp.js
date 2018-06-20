@@ -42,9 +42,14 @@ const hikingapp = (remoteserver) => {
             .then(
                 (routesjson) => {
                     ractive_ui.set("hikes", routesjson);
+                    console.log("SET HIKES");
                 },
                 (reason) => {
                     // Error retreiving routes!
+                    console.log("FAILED SETTING HIKES");
+                    if(reason === "cuid is invalid, ask for a new one on /cuid"){
+                        localStorage.removeItem('cuid');
+                    }
                     console.log(reason);
                 }
             )
@@ -58,13 +63,33 @@ const hikingapp = (remoteserver) => {
         // navigator.geolocation.watchPosition(map.geo_success.bind(map), null, geo_options);
     });
 
+    function displayinfo(text){
+        info.innerHTML = text;
+        info.style.visibility = 'visible';
+       
+        var timeleft = 10;
+        var downloadTimer = setInterval(function () {
+            --timeleft;
+            if (timeleft <= 0){
+                clearInterval(downloadTimer);
+                info.innerHTML = "";
+                info.style.visibility = 'hidden';
+            }
+        }, 1000);
+    }
+
     //Events
     ractive_ui.on({
         'collapse': (event, filename, routeobj) => {
             console.log("yes yes yes");
             //Toggle description
-            $(".item").toggle(false);
-            $("#route" + filename).toggle(true);
+            // $(".item").toggle(false);
+            var items = document.getElementsByClassName('item');
+            for (let x = 0; x < items.length; x++) {
+                items[x].classList.toggle('visible');
+            }
+            // $("#route" + filename).toggle(true);
+            document.getElementById("#route" + filename).classList.toggle('visible');
             //Show chosen route on map
             map.showroute(routeobj.data.json);
         },
@@ -80,35 +105,34 @@ const hikingapp = (remoteserver) => {
                             getroutesjson(remoteserver + '/routes?cuid=' + cuid)
                                 .then(
                                     (routesjson) => {
-                                        //Show success
-                                        var timeleft = 10;
-                                        var downloadTimer = setInterval(function () {
-                                            --timeleft;
-                                            if (timeleft <= 0){
-                                                clearInterval(downloadTimer);
-                                                info.innerHTML = "";
-                                            }
-                                        }, 1000);
-                                        info.innerHTML = "Route is toegevoegd";
+                                        displayinfo("Route is toegevoegd");
                                         ractive_ui.set("hikes", routesjson);
                                         //Show chosen route
                                         map.showroute(routesjson[routesjson.length - 1].data.json);
                                     },
                                     (reason) => {
                                         //error
-                                        info.innerHTML = reason;
+                                        console.log(reason + "Blala");
+                                        if(reason === "cuid is invalid, ask for a new one on /cuid"){
+                                            localStorage.removeItem('cuid');
+                                        }
+                                        displayinfo(reason);
                                     }
                                 )
                                 .catch(
                                     (reason) => {
                                         //error
-                                        info.innerHTML = reason;
+                                        console.log(reason + "Blala");
+                                        if(reason === "cuid is invalid, ask for a new one on /cuid"){
+                                            localStorage.removeItem('cuid');
+                                        }
+                                        displayinfo(reason);
                                     }
                                 );
                         }
                     )
                     .catch(
-                        (e) => {
+                        (e) => {                         
                             info.innerHTML = e;
                         }
                     );
